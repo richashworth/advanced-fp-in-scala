@@ -17,6 +17,11 @@ import Scalaz._
   */
 object exercise1 {
   sealed trait Figure
+  case class Rectangle(a: Double, b: Double)
+  case class Trapezoid(a: Double, b: Double, h: Double)
+  case class Circle(r: Double)
+
+  // Could also represent this as a series of Eithers
 }
 
 /**
@@ -25,15 +30,15 @@ object exercise1 {
 object exercise2 {
 
   /** Maybe is of kind *. Change it to be * -> * so that it can hold values of any type */
-  sealed trait Maybe
-  case class Just(value: String)
+  sealed trait Maybe[A]
+  case class Just[A](value: A)
   case object Empty
 
   val gotIt = Just("hello")
   val nah = Empty
-  // val gotNum = Just(10)
-  // case class User(name: String)
-  // val maybeUser = Just(User("Swift"))
+  val gotNum = Just(10)
+  case class User(name: String)
+  val maybeUser = Just(User("Swift"))
 }
 
 /**
@@ -45,6 +50,13 @@ object exercise3 {
   def func2[F[_], A](f: F[A]): F[A] = f
   def func3[E[_, _], A, B](e: E[A, B]): E[A, B] = e
   def func4[T[_[_]], F[_]](t: T[F]): T[F] = t
+
+  func1[Int](2)
+  func2[Option, Int](Some(1))
+  func3[Map, Int, String](Map(1 -> "Hi"))
+
+  class Container[F[_]]()
+  func4[Container, List](new Container[List])
 }
 
 object exercise4 {
@@ -52,11 +64,9 @@ object exercise4 {
     def value: F[String]
   }
 
-  /*
-  new Example[_] { // <-- ???
-    def value: Either[String, Int] = Right(2)
+  new Example[Either[?, Int]] { // <-- ???
+    def value: Either[String, Int] = Right(2) // returns a set of types
   }
- */
 }
 
 /** Explore the mysteries of magic box */
@@ -64,6 +74,7 @@ object exercise5 {
 
   /** This is a magic box. */
   trait MagicBox[A] {
+    // Here, B is an existential type
     type B
     def create[C](c: C): MagicBox[C]
     def get: A
@@ -72,7 +83,12 @@ object exercise5 {
   }
 
   /** create a class IntMagicBox[A] that is a MagicBox where B is an Int */
-  // class IntMagicBox[A] ???
+  class IntMagicBox[A](a: A) extends MagicBox[A] {
+    // We can fix B here, and access it elsewhere using path-dependent typing
+    type B = Int
+    def create[C](c: C): MagicBox[C] = new IntMagicBox(c)
+    def get: A = a
+  }
 
   /**
     Method transformAndExtract should take a MagicBox and function f, apply to map method and then
@@ -80,11 +96,14 @@ object exercise5 {
 
     Implement transformAndExtract
     */
-  // def transformAndExtract[A](mb: MagicBox[A])(f: A => ???): ??? = ???
+  def transformAndExtract[A](mb: MagicBox[A])(f: A => mb.B): mb.B =
+    mb.map(f).get
 
-  // val strIntMagicBox = new IntMagicBox[String]("hello existential")
+  val strIntMagicBox = new IntMagicBox[String]("hello existential")
+
   val length: String => Int = _.length
+
   /** call transformAndExtract with instance of intMagicBox and function length to test that it works*/
-  // transformAndExtract[String](strIntMagicBox)(length)
+  transformAndExtract[String](strIntMagicBox)(length)
 
 }
