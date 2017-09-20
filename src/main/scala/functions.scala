@@ -180,7 +180,7 @@ object exercise5 {
     case Apple  => 0.1
     case Orange => 0.3
   }
-  val noDicount: Item => Double = i => 0.0
+  val noDiscount: Item => Double = i => 0.0
 
   /**
     * Create a function called createCheckout that crafts a checkout for a given shop
@@ -191,11 +191,11 @@ object exercise5 {
     * 3. return a function that will take an Item as parameter and return a final price for
     *    that item as a result
     */
-  // We could use the Applicative pattern
   val createCheckout: (Item => Double) => (Item => Double) => (Item => Double) =
     (priceStrategy: Item => Double) => { (discountStrategy: Item => Double) =>
       { (i: Item) =>
         {
+          // NB we could use the Applicative pattern here!
           val p = priceStrategy(i)
           val d = discountStrategy(i)
           p - (p * d)
