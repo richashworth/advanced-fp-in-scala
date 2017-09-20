@@ -6,13 +6,13 @@ import scalaz._
 
 import Scalaz._
 
-/** 
+/**
   * Create ADT representing geometric figures using traits and case classes
   * A figure can be a rectangle or trapezoid or cicrle
   * Rectangle has side a and side b
   * Trapezoid has base a, base b and height h
-  * Circle has radious r
-  * 
+  * Circle has radius r
+  *
   * Can you think of other representation using different machinery?
   */
 object exercise1 {
@@ -23,6 +23,7 @@ object exercise1 {
   * Call me maybe
   */
 object exercise2 {
+
   /** Maybe is of kind *. Change it to be * -> * so that it can hold values of any type */
   sealed trait Maybe
   case class Just(value: String)
@@ -46,7 +47,6 @@ object exercise3 {
   def func4[T[_[_]], F[_]](t: T[F]): T[F] = t
 }
 
-
 object exercise4 {
   sealed trait Example[F[_]] {
     def value: F[String]
@@ -56,7 +56,7 @@ object exercise4 {
   new Example[_] { // <-- ???
     def value: Either[String, Int] = Right(2)
   }
-  */
+ */
 }
 
 /** Explore the mysteries of magic box */
@@ -74,10 +74,10 @@ object exercise5 {
   /** create a class IntMagicBox[A] that is a MagicBox where B is an Int */
   // class IntMagicBox[A] ???
 
-  /** 
+  /**
     Method transformAndExtract should take a MagicBox and function f, apply to map method and then
     retrive the value using get method.
-    
+
     Implement transformAndExtract
     */
   // def transformAndExtract[A](mb: MagicBox[A])(f: A => ???): ??? = ???
