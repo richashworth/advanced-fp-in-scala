@@ -74,7 +74,7 @@ object exercise5 {
 
   /** This is a magic box. */
   trait MagicBox[A] {
-    // Here, B is an existential type
+    // Here, B is an existential type; we are hiding it in the top-level type params of MagicBox
     type B
     def create[C](c: C): MagicBox[C]
     def get: A
