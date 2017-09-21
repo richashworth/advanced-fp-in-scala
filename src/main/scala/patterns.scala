@@ -20,21 +20,31 @@ object exercise1 {
   val iWillGiveYouInt: Long => Error \/ Int =
     (l: Long) => if (l < 0) l.toInt.right else MiningBitcoinNoTimeToTalk.left
 
-  def calculation(d: Double, l: Long): Error \/ (String, Int) =
-    for {
-      s <- iWillGiveYouString(d)
-      i <- iWillGiveYouInt(l)
-    } yield (s, i)
+  // NB Use monadic for-comprehensions to short-circuit on error
+  // def calculation(d: Double, l: Long): Error \/ (String, Int) =
+  //   for {
+  //     s <- iWillGiveYouString(d)
+  //     i <- iWillGiveYouInt(l)
+  //   } yield (s, i)
+
+  // NB Use applicative builder (TIE fighter operator) with Validation to accumulate errors
+  def calculation(d: Double, l: Long): ValidationNel[Error, (String, Int)] =
+    (iWillGiveYouString(d).validationNel |@|
+      iWillGiveYouInt(l).validationNel) { (s, i) =>
+      (s, i)
+    }
 
   /** If I'm not interested with an error - I want to ignore it */
-  val result: Option[(String, Int)] = ??? // calculate(20.0, -3)
+  val result: Option[(String, Int)] = calculation(20.0, -3).toOption
 
   /** What is a potential issue with the returned type Error \/ (String, Int) */
   /** Run all those function calls and reason about the result, what can we do about it? */
-  calculation(20.0, -2)
-  calculation(20.0, 6)
-  calculation(5.0, -2)
-  calculation(5.0, 6)
+  def main(args: Array[String]): Unit = {
+    println(calculation(20.0, -2))
+    println(calculation(20.0, 6))
+    println(calculation(5.0, -2))
+    println(calculation(5.0, 6))
+  }
 
 }
 
