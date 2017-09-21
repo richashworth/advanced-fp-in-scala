@@ -39,12 +39,12 @@ object exercise1 {
 
   /** What is a potential issue with the returned type Error \/ (String, Int) */
   /** Run all those function calls and reason about the result, what can we do about it? */
-  def main(args: Array[String]): Unit = {
-    println(calculation(20.0, -2))
-    println(calculation(20.0, 6))
-    println(calculation(5.0, -2))
-    println(calculation(5.0, 6))
-  }
+  // def main(args: Array[String]): Unit = {
+  //   println(calculation(20.0, -2))
+  //   println(calculation(20.0, 6))
+  //   println(calculation(5.0, -2))
+  //   println(calculation(5.0, 6))
+  // }
 
 }
 
@@ -57,14 +57,20 @@ object exercise2 {
   case object Orange extends Item
 
   /** Basket contains items */
+  // NB you could make this more general and parameterize Basket on A; and later require that A
+  // forms a semigroup
   case class Basket(items: List[Item])
 
   /** I have to baskets */
   val basket1 = Basket(items = List(Apple, Orange, Apple, Apple))
   val basket2 = Basket(items = List(Apple, Apple, Orange))
 
+  implicit def BasketSemigroup: Semigroup[Basket] = new Semigroup[Basket] {
+    def append(b1: Basket, b2: => Basket): Basket = Basket(b1.items ++ b2.items)
+  }
+
   /** Could I merge two baskets together */
-  val finalBasket: Basket = ??? // basket1 +  basket2
+  val finalBasket: Basket = basket1 |+| basket2
 
   val user1 = User("john")
   val user2 = User("pawel")
@@ -75,7 +81,8 @@ object exercise2 {
   val session2: Map[User, Basket] =
     Map(user1 -> finalBasket, user2 -> basket1, user3 -> basket2)
 
-  val session: Map[User, Basket] = ??? // session1 + session2
+  // NB this is why using semigroups is powerful!
+  val session: Map[User, Basket] = session1 |+| session2
 
   /** Implement toBasket method, what needs to be added for this to work? */
   def toBasket(maybeItem: Option[Item]): Basket = ???
