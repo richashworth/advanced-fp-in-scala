@@ -7,7 +7,7 @@ import scalaz._, Scalaz._, concurrent.Task
 object exercise1 {
 
   /** we have some potential errors*/
-  sealed trait Error
+   sealed trait Error
   case object NotInTheMoodToTalkToHumans extends Error
   case object MiningBitcoinNoTimeToTalk extends Error
 
